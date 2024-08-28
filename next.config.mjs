@@ -3,6 +3,7 @@ const nextConfig = {
     reactStrictMode: true,
     env:{
       GCP_PLACES_KEY : process.env.GCP_PLACES_KEY,
+      GCP_AI_KEY : process.env.GCP_AI_KEY
     }
 }
 

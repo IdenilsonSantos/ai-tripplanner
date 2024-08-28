@@ -1,11 +1,11 @@
 import { usePlacesWidget } from "react-google-autocomplete";
 import { Input } from "../ui/input";
 
-const AutoComplete = () => {
+const AutoComplete = ({handleSelectPlace} : any) => {
   const { ref } = usePlacesWidget({
     apiKey: process.env.GCP_PLACES_KEY,
     onPlaceSelected: (place) => {
-      console.log(place);
+      handleSelectPlace(place)
     },
     options: {
       types: ["(regions)"],
