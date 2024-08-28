@@ -12,6 +12,8 @@ import Image from "next/image";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import LocationSearchInput from "@/components/GooglePlaces";
+import AutoComplete from "@/components/GooglePlaces";
 
 type CardGrid = {
   id: any;
@@ -120,7 +122,7 @@ const Generation = () => {
           title="Para qual destino deseja ir ?"
           subtitle="Selecione um destino e vamos juntos"
         />
-        <ReactSelect className="w-full md:w-32 lg:w-[500px] h-[56px]" />
+        <AutoComplete/>
       </section>
 
       <section className="days w-full flex flex-col items-start gap-4">
@@ -128,7 +130,7 @@ const Generation = () => {
           title="Quantos dias deseja viajar ?"
           subtitle="Aproveite todos os dias"
         />
-        <Input className="w-full md:w-32 lg:w-[500px] h-[48px] focus-visible:ring-offset-0 focus-visible:ring-0" />
+        <Input type="number" placeholder="0" minLength={1} className="w-full md:w-32 lg:w-[500px] h-[48px] focus-visible:ring-offset-0 focus-visible:ring-0" />
       </section>
 
       <section className="budget w-full flex flex-col items-start gap-4">
@@ -163,9 +165,7 @@ const Generation = () => {
       </section>
 
       <div className="generate-btn w-full flex justify-end">
-        <Button className="text-white">
-            Gerar
-        </Button>
+        <Button className="text-white">Gerar</Button>
       </div>
     </div>
   );
