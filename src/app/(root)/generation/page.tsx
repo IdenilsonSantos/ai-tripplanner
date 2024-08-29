@@ -7,12 +7,14 @@ import Image from "next/image";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import AutoComplete from "@/components/GooglePlaces";
+import AutoComplete from "@/components/PlacesAutoComplete";
 import { options, optionsTravelers } from "@/app/utils/options";
 import { AI_PROMPT } from "@/app/utils/prompt";
 import { chatSession } from "@/app/utils/aimodel";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "@/app/utils/firebaseConfig";
 
 type CardGridProps = {
   id: any;
@@ -27,11 +29,7 @@ type CardGridProps = {
 const Generation = () => {
   const [budget, setBudget] = useState<Number>();
   const [travelers, setTravelers] = useState<Number>();
-  const [values, setValues] = useState({
-    days: "0",
-    traveler: "",
-    budget: "",
-  });
+  const [values, setValues] = useState({days: "0"});
   const [selectPlace, setSelectPlace] = useState<any>()
   const [loadingGenerate, setLoadingGenerate] = useState(false)
 
@@ -63,8 +61,10 @@ const Generation = () => {
     const travelerType = travelers === 1 ? "alone" : travelers === 2 ? "couple" : travelers === 3 ? "friends" : "group";
     const budgetType = budget === 1 ? "low" : budget === 2 ? "moderate" : "high";
   
+    const location = selectPlace?.address_components[0]?.short_name || ""
+
     const finalPrompt = AI_PROMPT
-      .replace("{location}", selectPlace?.address_components[0]?.short_name || "")
+      .replace("{location}", location)
       .replace("{days}", values.days)
       .replace("{traveler}", travelerType)
       .replace("{budget}", budgetType);
@@ -72,13 +72,44 @@ const Generation = () => {
     try {
       setLoadingGenerate(true)
       const result = await chatSession.sendMessage(finalPrompt);
-      console.log("Generated Plan:", result?.response?.text());
+      const plannerData = result?.response?.text()
+
+      savePlanner({
+        budget: budgetType,
+        traveler: travelerType,
+        location,
+        days: values.days
+      }, plannerData)
+
       setLoadingGenerate(false)
       toast("Plano de viagem gerado com sucesso.")
+
+      setValues({days: ""})
+      setBudget(undefined)
+      setTravelers(undefined)
+      setSelectPlace(null)
     } catch (error) {
       console.error("Error generating planner:", error);
     }
   };
+
+  const savePlanner = async (userSelection: any, plannerData: any) => {
+
+    const docId = Date.now().toString();
+
+    await setDoc(doc(db, "aiplanner", docId), {
+      selection: {
+        budget: userSelection?.budget,
+        traveler: userSelection?.traveler,
+        location: userSelection?.location,
+        days: userSelection?.days
+      },
+      planner: JSON.parse(plannerData),
+      userEmail: 'idenilsondev95@gmail.com',
+      id: docId
+    });
+
+  }
 
   const renderCard = ({
     id,
@@ -122,6 +153,7 @@ const Generation = () => {
         />
         <Input
           onChange={(e) => handleInputChange("days", e.target.value)}
+          value={values?.days || ""}
           type="number"
           placeholder="0"
           minLength={1}
@@ -161,7 +193,7 @@ const Generation = () => {
       </section>
 
       <div className="generate-btn w-full flex justify-end">
-        <Button className="text-white" onClick={generatePlanner}>
+        <Button className="text-white" onClick={generatePlanner} disabled={loadingGenerate}>
           {loadingGenerate ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Gerando plano</> : "Gerar"}
         </Button>
       </div>

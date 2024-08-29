@@ -10,7 +10,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 
-  const apiKey: string | any  = process.env.GCP_AI_KEY;
+  const apiKey: string | any  = process.env.NEXT_PUBLIC_GCP_AI_KEY;
   const genAI = new GoogleGenerativeAI(apiKey);
   
   const model = genAI.getGenerativeModel({
@@ -32,7 +32,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
         {
           role: "user",
           parts: [
-            {text: "Generate Travel Plan for Location: Las Vegas,for 3 Days for Couple with a Cheap budget,Give me a Hotels options list with HotelName,Hotel address,Price, hotel image url,geo coordinates,rating,descriptions and suggest itinerary with placeName,Place Details,Place Image Url, Geo Coordinates,ticket Pricing,rating,Time travel each of the location for 3 days with each day plan with best time to visit in JSON format."},
+            {text: "Gere um plano de viagem para o local: Las Vegas, por 3 dias para casais com um orçamento barato, dê-me uma lista de opções de hotéis com nome do hotel, endereço do hotel, preço, URL da imagem do hotel, coordenadas geográficas, classificação, descrições e sugestão de itinerário com nome do local, local Detalhes, URL da imagem do local, coordenadas geográficas, preço do ingresso, classificação, viagem no tempo em cada local por 3 dias com plano de cada dia com melhor horário para visitar no formato JSON."},
           ],
         },
         {
