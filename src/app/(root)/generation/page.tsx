@@ -15,6 +15,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/app/utils/firebaseConfig";
+import { useRouter } from 'next/navigation';
 
 type CardGridProps = {
   id: any;
@@ -32,6 +33,8 @@ const Generation = () => {
   const [values, setValues] = useState({days: "0"});
   const [selectPlace, setSelectPlace] = useState<any>()
   const [loadingGenerate, setLoadingGenerate] = useState(false)
+
+  const router = useRouter()
 
   const handleSelect = (id: number, type: "budget" | "travelers") => {
     if (type === "budget") {
@@ -58,10 +61,10 @@ const Generation = () => {
       return;
     }
   
-    const travelerType = travelers === 1 ? "alone" : travelers === 2 ? "couple" : travelers === 3 ? "friends" : "group";
-    const budgetType = budget === 1 ? "low" : budget === 2 ? "moderate" : "high";
+    const travelerType = travelers === 1 ? "sozinho" : travelers === 2 ? "casal" : travelers === 3 ? "amigos" : "familia";
+    const budgetType = budget === 1 ? "pouca grana" : budget === 2 ? "moderado" : "a vontade";
   
-    const location = selectPlace?.address_components[0]?.short_name || ""
+    const location = selectPlace?.formatted_address || ""
 
     const finalPrompt = AI_PROMPT
       .replace("{location}", location)
@@ -73,6 +76,8 @@ const Generation = () => {
       setLoadingGenerate(true)
       const result = await chatSession.sendMessage(finalPrompt);
       const plannerData = result?.response?.text()
+
+      console.log(plannerData)
 
       savePlanner({
         budget: budgetType,
@@ -109,7 +114,10 @@ const Generation = () => {
       id: docId
     });
 
+    router.push(`/view-planner/${docId}`)
+
   }
+  
 
   const renderCard = ({
     id,
@@ -142,6 +150,7 @@ const Generation = () => {
         <Heading
           title="Para qual destino deseja ir?"
           subtitle="Selecione um destino e vamos juntos"
+          variant="h4"
         />
         <AutoComplete handleSelectPlace={handleSelectPlace} />
       </section>
@@ -150,6 +159,7 @@ const Generation = () => {
         <Heading
           title="Quantos dias deseja viajar?"
           subtitle="Aproveite todos os dias"
+          variant="h4"
         />
         <Input
           onChange={(e) => handleInputChange("days", e.target.value)}
@@ -162,7 +172,7 @@ const Generation = () => {
       </section>
 
       <section className="budget w-full flex flex-col items-start gap-4">
-        <Heading title="Quanto pode pagar?" subtitle="Gaste com sabedoria" />
+        <Heading title="Quanto pode pagar?" subtitle="Gaste com sabedoria" variant="h4" />
         <div className="grid grid-cols-3 grid-rows-1 gap-4">
           {options.map((option) =>
             renderCard({
@@ -179,6 +189,7 @@ const Generation = () => {
         <Heading
           title="Quem vai com você para este destino incrível?"
           subtitle="Sendo sozinho ou com a galera, o importante é se divertir"
+          variant="h4"
         />
         <div className="grid grid-cols-4 gap-4">
           {optionsTravelers.map((option) =>

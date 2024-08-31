@@ -1,14 +1,19 @@
 import React from "react";
 import Subtitle from "../Subtilte";
+import Typography from "../Typography";
 
 type Heading = {
   title: String;
   subtitle: String;
+  variant: any
 };
-const Heading = ({ title, subtitle }: Partial<Heading>) => {
+
+const Heading = ({ title, subtitle, variant = 'p' }: Partial<Heading>) => {
   return (
     <div className="flex-col">
-      <h4 className="heading text-lg font-bold">{title}</h4>
+      <Typography variant={variant}>
+        {title}
+      </Typography>
       {subtitle && <Subtitle title={subtitle} />}
     </div>
   );

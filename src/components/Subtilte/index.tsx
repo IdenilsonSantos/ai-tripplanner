@@ -1,11 +1,15 @@
 import React from "react";
+import Typography from "../Typography";
 
 type Subtitle = {
-    title: String
+    title: String;
+    variant?: any
 }
-const Subtitle = ({title} : Subtitle) => {
+const Subtitle = ({title, variant = "p"} : Subtitle) => {
   return (
-    <h4 className="subtitle text-sm text-gray">{title}</h4>
+    <Typography variant={variant} className="text-sm text-gray">
+      {title}
+    </Typography>
   );
 };
 
